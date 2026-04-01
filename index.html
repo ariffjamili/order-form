@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GLORIOUS90 — Jaket Bomber</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f0f1a;
+      --surface:  #1a1a2e;
+      --surface2: #16213e;
+      --border:   #2a2a4a;
+      --gold:     #c9a84c;
+      --gold-dim: #a07830;
+      --gold-light: #e8c96a;
+      --text:     #e8e8f0;
+      --muted:    #8888aa;
+      --danger:   #e05555;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 60px;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+      padding: 48px 0 32px;
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      display: block;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin-top: 24px;
+    }
+    .brand-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .brand-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 18vw, 96px);
+      letter-spacing: 6px;
+      line-height: 0.9;
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(201,168,76,0.25), 0 2px 0 rgba(0,0,0,0.6);
+    }
+    .brand-subtitle {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    .brand-item {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 5px;
+      color: var(--text);
+      border: 1px solid var(--gold-dim);
+      padding: 4px 20px 2px;
+    }
+    .drop-badge {
+      display: inline-block;
+      margin-top: 12px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--gold);
+      padding: 4px 12px;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 24px; }
+    label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    input[type="text"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      border-radius: 0;
+    }
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--gold-dim);
+    }
+    input.error, select.error { border-color: var(--danger) !important; }
+    .field-error {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 5px;
+      display: none;
+    }
+    .field-error.visible { display: block; }
+
+    /* ── Size Buttons ── */
+    .size-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .size-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 1px;
+      padding: 12px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .size-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+    .size-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--bg);
+    }
+    .size-surcharge-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--gold);
+      font-style: italic;
+      display: none;
+    }
+    .size-surcharge-note.visible { display: block; }
+
+    /* ── Checkbox ── */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .custom-checkbox {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .custom-checkbox.checked {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+    .custom-checkbox svg { display: none; }
+    .custom-checkbox.checked svg { display: block; }
+    .checkbox-label {
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      margin: 0;
+    }
+    .shipping-note {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--gold);
+      padding-left: 32px;
+      display: none;
+    }
+    .shipping-note.visible { display: block; }
+
+    /* ── Address reveal ── */
+    .address-fields {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+      opacity: 0;
+    }
+    .address-fields.open {
+      max-height: 600px;
+      opacity: 1;
+    }
+    .address-inner { padding-top: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .address-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 8px 0 24px;
+    }
+
+    /* ── Summary ── */
+    .summary-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 20px 20px 16px;
+      margin-bottom: 28px;
+    }
+    .summary-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .summary-line span:last-child { font-family: 'Barlow Condensed', sans-serif; font-weight: 600; }
+    .summary-line.highlight span { color: var(--text); }
+    .summary-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 6px;
+    }
+    .summary-total-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .summary-total-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    /* ── Submit ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      padding: 18px 24px 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-transform: uppercase;
+    }
+    .btn-submit:hover { background: var(--gold-light); }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { background: var(--gold-dim); cursor: not-allowed; opacity: 0.6; }
+
+    /* ── Ack Card ── */
+    #ack-card {
+      display: none;
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--gold-dim);
+      padding: 48px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #ack-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    }
+    #ack-card.visible { display: block; animation: fadeSlideUp 0.5s ease both; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .ack-icon {
+      width: 56px; height: 56px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .ack-thanks {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .ack-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 3px;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+    .ack-order-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .ack-order-no {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 44px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(201,168,76,0.3);
+      margin-bottom: 24px;
+      word-break: break-all;
+    }
+    .ack-follow-up {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .ack-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      margin: 24px 0;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--danger);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 1px;
+      padding: 12px 24px;
+      transition: transform 0.3s ease;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Footer ── */
+    .footer {
+      width: 100%;
+      max-width: 560px;
+      text-align: center;
+      margin-top: 32px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--border);
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+
+    @media (max-width: 420px) {
+      .card { padding: 24px 18px; }
+      .size-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .address-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <p class="brand-eyebrow">Limited Edition Drop</p>
+    <h1 class="brand-title">GLORIOUS90</h1>
+    <p class="brand-subtitle">40 Years of Brotherhood</p>
+    <div class="brand-item">JAKET BOMBER</div><br>
+    <span class="drop-badge">Borang Tempahan Rasmi</span>
+  </header>
+
+  <!-- ── Order Form Card ── -->
+  <div class="card" id="form-card">
+
+    <!-- Nama -->
+    <div class="form-group">
+      <label for="nama">Nama Penuh</label>
+      <input type="text" id="nama" placeholder="Nama seperti dalam kad pengenalan" autocomplete="name" />
+      <p class="field-error" id="err-nama">Sila masukkan nama penuh anda.</p>
+    </div>
+
+    <!-- Telefon -->
+    <div class="form-group">
+      <label for="telefon">No. Telefon</label>
+      <input type="tel" id="telefon" placeholder="01X-XXXXXXXX" autocomplete="tel" />
+      <p class="field-error" id="err-telefon">Sila masukkan nombor telefon yang sah.</p>
+    </div>
+
+    <!-- Saiz -->
+    <div class="form-group">
+      <label>Saiz</label>
+      <div class="size-grid" id="size-grid">
+        <button type="button" class="size-btn" data-size="S">S</button>
+        <button type="button" class="size-btn" data-size="M">M</button>
+        <button type="button" class="size-btn" data-size="L">L</button>
+        <button type="button" class="size-btn" data-size="XL">XL</button>
+        <button type="button" class="size-btn" data-size="XXL">XXL</button>
+        <button type="button" class="size-btn" data-size="3XL">3XL</button>
+        <button type="button" class="size-btn" data-size="4XL">4XL</button>
+        <button type="button" class="size-btn" data-size="5XL">5XL</button>
+      </div>
+      <p class="size-surcharge-note" id="surcharge-note">Saiz ini dikenakan tambahan RM25</p>
+      <p class="field-error" id="err-saiz">Sila pilih saiz.</p>
+    </div>
+
+    <!-- Penghantaran -->
+    <div class="form-group">
+      <label>Penghantaran</label>
+      <div class="checkbox-row" id="delivery-toggle">
+        <div class="custom-checkbox" id="delivery-checkbox">
+          <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+            <path d="M1 4L4.5 7.5L11 1" stroke="#0f0f1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="checkbox-label">Saya memerlukan penghantaran</span>
+      </div>
+      <p class="shipping-note" id="shipping-note">Caj penghantaran: RM12</p>
+      <div class="address-fields" id="address-fields">
+        <div class="address-inner">
+          <div class="form-group" style="margin-bottom:0">
+            <label for="alamat">Alamat</label>
+            <input type="text" id="alamat" placeholder="No. Rumah, Jalan, Taman..." autocomplete="street-address" />
+            <p class="field-error" id="err-alamat">Sila masukkan alamat penghantaran.</p>
+          </div>
+          <div class="address-row">
+            <div class="form-group" style="margin-bottom:0">
+              <label for="poskod">Poskod</label>
+              <input type="text" id="poskod" placeholder="XXXXX" maxlength="5" autocomplete="postal-code" />
+              <p class="field-error" id="err-poskod">Sila masukkan poskod.</p>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label for="bandar">Bandar</label>
+              <input type="text" id="bandar" placeholder="Bandar" autocomplete="address-level2" />
+              <p class="field-error" id="err-bandar">Sila masukkan bandar.</p>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label for="negeri">Negeri</label>
+            <input type="text" id="negeri" placeholder="Negeri" autocomplete="address-level1" />
+            <p class="field-error" id="err-negeri">Sila masukkan negeri.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Order Summary -->
+    <div class="summary-card">
+      <p class="summary-title">Ringkasan Pesanan</p>
+      <div class="summary-line highlight" id="sum-item-row">
+        <span>Jaket Bomber (<span id="sum-saiz">—</span>)</span>
+        <span id="sum-base">RM—</span>
+      </div>
+      <div class="summary-line" id="sum-shipping-row" style="display:none">
+        <span>Caj Penghantaran</span>
+        <span>RM12</span>
+      </div>
+      <div class="summary-total-row">
+        <span class="summary-total-label">Jumlah Bayaran</span>
+        <span class="summary-total-amount" id="sum-total">RM—</span>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button type="button" class="btn-submit" id="btn-submit">Hantar Pesanan</button>
+  </div>
+
+  <!-- ── Acknowledgement Card ── -->
+  <div id="ack-card">
+    <div class="ack-icon">
+      <svg width="24" height="18" viewBox="0 0 24 18" fill="none">
+        <path d="M2 9L8.5 15.5L22 2" stroke="#c9a84c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="ack-thanks">Terima kasih!</p>
+    <p class="ack-headline">Pesanan anda telah diterima.</p>
+    <div class="ack-divider"></div>
+    <p class="ack-order-label">No. Pesanan</p>
+    <p class="ack-order-no" id="ack-order-no">—</p>
+    <div class="ack-divider"></div>
+    <p class="ack-follow-up">Kami akan menghubungi anda tidak lama lagi untuk<br>pengesahan pembayaran dan penghantaran.</p>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="toast"></div>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    &copy; 2026 GLORIOUS90 &mdash; SDAR 1986 &ndash; 1990
+  </footer>
+
+  <script>
+    // ──────────────────────────────────────────────
+    // State
+    // ──────────────────────────────────────────────
+    const LARGE_SIZES   = ['3XL', '4XL', '5XL'];
+    const PRICE_BASE    = 90;
+    const PRICE_LARGE   = 115;
+    const PRICE_SHIPPING = 12;
+
+    let selectedSize   = null;
+    let needDelivery   = false;
+
+    // ──────────────────────────────────────────────
+    // Order Number — YYYYMMDD-NN via localStorage
+    // ──────────────────────────────────────────────
+    function generateOrderNo() {
+      const today = new Date();
+      const yyyy  = today.getFullYear();
+      const mm    = String(today.getMonth() + 1).padStart(2, '0');
+      const dd    = String(today.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}${mm}${dd}`;
+
+      const stored = JSON.parse(localStorage.getItem('g90_order_counter') || '{}');
+      let counter  = 1;
+      if (stored.date === dateStr) {
+        counter = (stored.counter || 0) + 1;
+      }
+      localStorage.setItem('g90_order_counter', JSON.stringify({ date: dateStr, counter }));
+      return `${dateStr}-${String(counter).padStart(2, '0')}`;
+    }
+
+    // ──────────────────────────────────────────────
+    // Pricing
+    // ──────────────────────────────────────────────
+    function getBasePrice() {
+      if (!selectedSize) return null;
+      return LARGE_SIZES.includes(selectedSize) ? PRICE_LARGE : PRICE_BASE;
+    }
+    function getTotal() {
+      const base = getBasePrice();
+      if (base === null) return null;
+      return base + (needDelivery ? PRICE_SHIPPING : 0);
+    }
+
+    // ──────────────────────────────────────────────
+    // Update summary display
+    // ──────────────────────────────────────────────
+    function updateSummary() {
+      const base  = getBasePrice();
+      const total = getTotal();
+
+      document.getElementById('sum-saiz').textContent   = selectedSize || '—';
+      document.getElementById('sum-base').textContent   = base  !== null ? `RM${base}`  : 'RM—';
+      document.getElementById('sum-total').textContent  = total !== null ? `RM${total}` : 'RM—';
+
+      const shipRow = document.getElementById('sum-shipping-row');
+      shipRow.style.display = needDelivery ? 'flex' : 'none';
+    }
+
+    // ──────────────────────────────────────────────
+    // Size buttons
+    // ──────────────────────────────────────────────
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedSize = btn.dataset.size;
+
+        const note = document.getElementById('surcharge-note');
+        note.classList.toggle('visible', LARGE_SIZES.includes(selectedSize));
+        clearError('saiz');
+        updateSummary();
+      });
+    });
+
+    // ──────────────────────────────────────────────
+    // Delivery checkbox
+    // ──────────────────────────────────────────────
+    document.getElementById('delivery-toggle').addEventListener('click', () => {
+      needDelivery = !needDelivery;
+      document.getElementById('delivery-checkbox').classList.toggle('checked', needDelivery);
+      document.getElementById('shipping-note').classList.toggle('visible', needDelivery);
+
+      const fields = document.getElementById('address-fields');
+      fields.classList.toggle('open', needDelivery);
+
+      updateSummary();
+    });
+
+    // ──────────────────────────────────────────────
+    // Validation helpers
+    // ──────────────────────────────────────────────
+    function showError(field, msg) {
+      const input = document.getElementById(field);
+      const err   = document.getElementById(`err-${field}`);
+      if (input)  input.classList.add('error');
+      if (err) {
+        if (msg) err.textContent = msg;
+        err.classList.add('visible');
+      }
+    }
+    function clearError(field) {
+      const input = document.getElementById(field);
+      const err   = document.getElementById(`err-${field}`);
+      if (input) input.classList.remove('error');
+      if (err)   err.classList.remove('visible');
+    }
+    function val(id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    }
+
+    // Live clear on type
+    ['nama','telefon','alamat','poskod','bandar','negeri'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => clearError(id));
+    });
+
+    // ──────────────────────────────────────────────
+    // Toast
+    // ──────────────────────────────────────────────
+    let toastTimer = null;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
+    // ──────────────────────────────────────────────
+    // Submit
+    // ──────────────────────────────────────────────
+    document.getElementById('btn-submit').addEventListener('click', async () => {
+      let valid = true;
+
+      // Clear previous
+      ['nama','telefon','saiz','alamat','poskod','bandar','negeri'].forEach(clearError);
+
+      // Nama
+      if (!val('nama')) { showError('nama'); valid = false; }
+
+      // Telefon — basic: at least 9 digits
+      const tel = val('telefon').replace(/[\s\-]/g,'');
+      if (!tel || !/^\+?[\d]{9,15}$/.test(tel)) { showError('telefon'); valid = false; }
+
+      // Saiz
+      if (!selectedSize) { showError('saiz'); valid = false; }
+
+      // Address if delivery
+      if (needDelivery) {
+        if (!val('alamat')) { showError('alamat'); valid = false; }
+        if (!/^\d{5}$/.test(val('poskod'))) { showError('poskod', 'Poskod mestilah 5 digit.'); valid = false; }
+        if (!val('bandar')) { showError('bandar'); valid = false; }
+        if (!val('negeri')) { showError('negeri'); valid = false; }
+      }
+
+      if (!valid) {
+        showToast('Sila lengkapkan semua maklumat yang diperlukan.');
+        return;
+      }
+
+      const orderNo   = generateOrderNo();
+      const jumlah    = getTotal();
+
+      const payload = {
+        order_no:      orderNo,
+        nama:          val('nama'),
+        telefon:       tel,
+        saiz:          selectedSize,
+        penghantaran:  needDelivery,
+        jumlah_bayaran: jumlah,
+        ...(needDelivery ? {
+          alamat:  val('alamat'),
+          poskod:  val('poskod'),
+          bandar:  val('bandar'),
+          negeri:  val('negeri'),
+        } : {})
+      };
+
+      // ── Disable button ──
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.textContent = 'Menghantar...';
+
+      // ── POST to PHP ──
+      let phpSuccess = false;
+      try {
+        const resp = await fetch('save_order.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (data.success) phpSuccess = true;
+      } catch (e) {
+        console.warn('PHP save failed, continuing with mailto fallback.', e);
+      }
+
+      // ── mailto fallback ──
+      const addressLine = needDelivery
+        ? `\nAlamat: ${val('alamat')}, ${val('poskod')} ${val('bandar')}, ${val('negeri')}`
+        : '\nPengambilan sendiri';
+      const emailSubject = encodeURIComponent(`[GLORIOUS90] Pesanan Jaket Bomber — ${orderNo}`);
+      const emailBody    = encodeURIComponent(
+        `No. Pesanan  : ${orderNo}\n` +
+        `Nama         : ${val('nama')}\n` +
+        `Telefon      : ${tel}\n` +
+        `Saiz         : ${selectedSize}\n` +
+        `Penghantaran : ${needDelivery ? 'Ya' : 'Tidak'}${addressLine}\n` +
+        `Jumlah Bayaran: RM${jumlah}`
+      );
+      window.location.href = `mailto:urusetia@sdar90.net?subject=${emailSubject}&body=${emailBody}`;
+
+      // ── Show ack card ──
+      document.getElementById('ack-order-no').textContent = orderNo;
+      document.getElementById('form-card').style.display  = 'none';
+      const ack = document.getElementById('ack-card');
+      ack.classList.add('visible');
+      ack.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Init summary
+    updateSummary();
+  </script>
+</body>
+</html>
