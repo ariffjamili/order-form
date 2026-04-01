@@ -92,6 +92,53 @@ if ($penghantaran) {
     $order['negeri'] = $negeri;
 }
 
+// ── Email notification helper ──
+function sendOrderEmail(array $order): bool {
+    $to      = 'urusetia@sdar90.net';
+    $subject = '[GLORIOUS90] Pesanan Baru — ' . $order['order_no'];
+
+    $addressBlock = '';
+    if ($order['penghantaran']) {
+        $addressBlock =
+            "Alamat        : {$order['alamat']}\n" .
+            "Poskod        : {$order['poskod']}\n" .
+            "Bandar        : {$order['bandar']}\n" .
+            "Negeri        : {$order['negeri']}\n";
+    }
+
+    $deliveryLine = $order['penghantaran']
+        ? "Ya (Penghantaran ke alamat)"
+        : "Tidak (Pengambilan sendiri)";
+
+    $body =
+        "=========================================\n" .
+        "  GLORIOUS90 — SDAR 1986-1990           \n" .
+        "  Pesanan Jaket Bomber (Limited Edition) \n" .
+        "=========================================\n\n" .
+        "No. Pesanan   : {$order['order_no']}\n" .
+        "Tarikh        : {$order['timestamp']}\n\n" .
+        "--- Maklumat Pembeli ---\n" .
+        "Nama          : {$order['nama']}\n" .
+        "Telefon       : {$order['telefon']}\n\n" .
+        "--- Butiran Pesanan ---\n" .
+        "Saiz          : {$order['saiz']}\n" .
+        "Penghantaran  : {$deliveryLine}\n" .
+        $addressBlock .
+        "Jumlah Bayaran: RM{$order['jumlah_bayaran']}\n\n" .
+        "-----------------------------------------\n" .
+        "Dari laman web sdar90.net/order-form\n";
+
+    $headers = implode("\r\n", [
+        'From: GLORIOUS90 Order System <no-reply@sdar90.net>',
+        'Reply-To: no-reply@sdar90.net',
+        'Bcc: ariffjamili@gmail.com',
+        'X-Mailer: PHP/' . PHP_VERSION,
+        'Content-Type: text/plain; charset=UTF-8',
+    ]);
+
+    return mail($to, $subject, $body, $headers);
+}
+
 // ── Restrict file path to same directory ──
 $dir  = __DIR__;
 $file = $dir . DIRECTORY_SEPARATOR . 'orders.json';
@@ -132,6 +179,9 @@ if ($written === false) {
     exit;
 }
 
+// ── Send email notification ──
+$emailSent = sendOrderEmail($order);
+
 // ── Success ──
-echo json_encode(['success' => true, 'order_no' => $order_no]);
+echo json_encode(['success' => true, 'order_no' => $order_no, 'email_sent' => $emailSent]);
 exit;

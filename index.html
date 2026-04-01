@@ -756,7 +756,6 @@
       btn.textContent = 'Menghantar...';
 
       // ── POST to PHP ──
-      let phpSuccess = false;
       try {
         const resp = await fetch('save_order.php', {
           method: 'POST',
@@ -764,25 +763,19 @@
           body: JSON.stringify(payload)
         });
         const data = await resp.json();
-        if (data.success) phpSuccess = true;
+        if (!data.success) {
+          showToast('Ralat server: ' + (data.error || 'Cuba lagi.'));
+          btn.disabled = false;
+          btn.textContent = 'Hantar Pesanan';
+          return;
+        }
       } catch (e) {
-        console.warn('PHP save failed, continuing with mailto fallback.', e);
+        console.error('Submission failed:', e);
+        showToast('Gagal menghantar pesanan. Sila semak sambungan dan cuba lagi.');
+        btn.disabled = false;
+        btn.textContent = 'Hantar Pesanan';
+        return;
       }
-
-      // ── mailto fallback ──
-      const addressLine = needDelivery
-        ? `\nAlamat: ${val('alamat')}, ${val('poskod')} ${val('bandar')}, ${val('negeri')}`
-        : '\nPengambilan sendiri';
-      const emailSubject = encodeURIComponent(`[GLORIOUS90] Pesanan Jaket Bomber — ${orderNo}`);
-      const emailBody    = encodeURIComponent(
-        `No. Pesanan  : ${orderNo}\n` +
-        `Nama         : ${val('nama')}\n` +
-        `Telefon      : ${tel}\n` +
-        `Saiz         : ${selectedSize}\n` +
-        `Penghantaran : ${needDelivery ? 'Ya' : 'Tidak'}${addressLine}\n` +
-        `Jumlah Bayaran: RM${jumlah}`
-      );
-      window.location.href = `mailto:urusetia@sdar90.net?subject=${emailSubject}&body=${emailBody}`;
 
       // ── Show ack card ──
       document.getElementById('ack-order-no').textContent = orderNo;
