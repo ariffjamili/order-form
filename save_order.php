@@ -33,40 +33,38 @@ function clean(mixed $v, int $maxLen = 255): string {
 }
 
 // ── Validate required fields ──
-$order_no   = clean($data['order_no'] ?? '', 30);
-$nama       = clean($data['nama']     ?? '');
-$telefon    = clean($data['telefon']  ?? '', 20);
-$saiz       = clean($data['saiz']     ?? '', 5);
-$jumlah_raw = $data['jumlah_bayaran'] ?? null;
+$order_no     = clean($data['order_no'] ?? '', 20);
+$nama         = clean($data['nama']     ?? '');
+$telefon      = clean($data['telefon']  ?? '', 20);
+$saiz         = clean($data['saiz']     ?? '', 10);
+$jumlah_raw   = $data['jumlah_bayaran'] ?? null;
 $penghantaran = isset($data['penghantaran']) && $data['penghantaran'] === true;
 
 $allowed_sizes   = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
 $allowed_amounts = [90, 102, 115, 127];
 
 $errors = [];
-if ($order_no === '')                             $errors[] = 'order_no diperlukan.';
-if ($nama     === '')                             $errors[] = 'nama diperlukan.';
-if ($telefon  === '' || !preg_match('/^\+?[\d]{9,15}$/', $telefon)) $errors[] = 'telefon tidak sah.';
-if (!in_array($saiz, $allowed_sizes, true))       $errors[] = 'saiz tidak sah.';
+if ($order_no === '')                                                              $errors[] = 'order_no diperlukan.';
+if ($nama     === '')                                                              $errors[] = 'nama diperlukan.';
+if ($telefon  === '' || !preg_match('/^\+?[\d]{9,15}$/', $telefon))               $errors[] = 'telefon tidak sah.';
+if (!in_array($saiz, $allowed_sizes, true))                                        $errors[] = 'saiz tidak sah.';
 if (!is_numeric($jumlah_raw) || !in_array((int)$jumlah_raw, $allowed_amounts, true)) $errors[] = 'jumlah_bayaran tidak sah.';
-
-// Validate order_no format: YYYYMMDD-NN
-if (!preg_match('/^\d{8}-\d{2}$/', $order_no))   $errors[] = 'format order_no tidak sah.';
+if (!preg_match('/^\d{8}-\d{2}$/', $order_no))                                    $errors[] = 'format order_no tidak sah.';
 
 // Address required when penghantaran = true
-$alamat = '';
-$poskod = '';
-$bandar = '';
-$negeri = '';
+$alamat = null;
+$poskod = null;
+$bandar = null;
+$negeri = null;
 if ($penghantaran) {
-    $alamat = clean($data['alamat'] ?? '');
-    $poskod = clean($data['poskod'] ?? '', 10);
-    $bandar = clean($data['bandar'] ?? '');
-    $negeri = clean($data['negeri'] ?? '');
-    if ($alamat === '') $errors[] = 'alamat diperlukan untuk penghantaran.';
-    if (!preg_match('/^\d{5}$/', $poskod)) $errors[] = 'poskod tidak sah.';
-    if ($bandar === '') $errors[] = 'bandar diperlukan.';
-    if ($negeri === '') $errors[] = 'negeri diperlukan.';
+    $alamat = clean($data['alamat'] ?? '') ?: null;
+    $poskod = clean($data['poskod'] ?? '', 10) ?: null;
+    $bandar = clean($data['bandar'] ?? '') ?: null;
+    $negeri = clean($data['negeri'] ?? '') ?: null;
+    if ($alamat === null)                          $errors[] = 'alamat diperlukan untuk penghantaran.';
+    if ($poskod === null || !preg_match('/^\d{5}$/', $poskod)) $errors[] = 'poskod tidak sah.';
+    if ($bandar === null)                          $errors[] = 'bandar diperlukan.';
+    if ($negeri === null)                          $errors[] = 'negeri diperlukan.';
 }
 
 if (!empty($errors)) {
@@ -75,24 +73,75 @@ if (!empty($errors)) {
     exit;
 }
 
-// ── Build order object ──
-$order = [
-    'order_no'       => $order_no,
-    'timestamp'      => date('Y-m-d H:i:s'),
-    'nama'           => $nama,
-    'telefon'        => $telefon,
-    'saiz'           => $saiz,
-    'penghantaran'   => $penghantaran,
-    'jumlah_bayaran' => (int)$jumlah_raw,
-];
-if ($penghantaran) {
-    $order['alamat'] = $alamat;
-    $order['poskod'] = $poskod;
-    $order['bandar'] = $bandar;
-    $order['negeri'] = $negeri;
+$timestamp      = date('Y-m-d H:i:s');
+$jumlah_bayaran = (float)$jumlah_raw;
+$penghantaran_i = $penghantaran ? 1 : 0;
+
+// ── Database connection ──
+/** @var mysqli $mysqli */
+$mysqli = require __DIR__ . '/db.php';
+
+// ── Insert with prepared statement ──
+$sql = "INSERT INTO `orders`
+            (order_no, timestamp, nama, telefon, saiz,
+             penghantaran, alamat, poskod, bandar, negeri, jumlah_bayaran)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+$stmt = $mysqli->prepare($sql);
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Gagal menyediakan query.']);
+    exit;
 }
 
-// ── Email notification helper ──
+// Types: s=string, i=integer, d=double
+$stmt->bind_param(
+    'sssssissssd',
+    $order_no,
+    $timestamp,
+    $nama,
+    $telefon,
+    $saiz,
+    $penghantaran_i,
+    $alamat,
+    $poskod,
+    $bandar,
+    $negeri,
+    $jumlah_bayaran
+);
+
+if (!$stmt->execute()) {
+    // Duplicate order_no (errno 1062) means the order was already saved
+    if ($mysqli->errno === 1062) {
+        http_response_code(409);
+        echo json_encode(['success' => false, 'error' => 'No. pesanan sudah wujud.']);
+    } else {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => 'Gagal simpan pesanan.']);
+    }
+    $stmt->close();
+    $mysqli->close();
+    exit;
+}
+
+$stmt->close();
+$mysqli->close();
+
+// ── Email notification ──
+$order = [
+    'order_no'      => $order_no,
+    'timestamp'     => $timestamp,
+    'nama'          => $nama,
+    'telefon'       => $telefon,
+    'saiz'          => $saiz,
+    'penghantaran'  => $penghantaran,
+    'jumlah_bayaran'=> $jumlah_bayaran,
+    'alamat'        => $alamat ?? '',
+    'poskod'        => $poskod ?? '',
+    'bandar'        => $bandar ?? '',
+    'negeri'        => $negeri ?? '',
+];
+
 function sendOrderEmail(array $order): bool {
     $to      = 'urusetia@sdar90.net';
     $subject = '[GLORIOUS90] Pesanan Baru — ' . $order['order_no'];
@@ -139,47 +188,6 @@ function sendOrderEmail(array $order): bool {
     return mail($to, $subject, $body, $headers);
 }
 
-// ── Restrict file path to same directory ──
-$dir  = __DIR__;
-$file = $dir . DIRECTORY_SEPARATOR . 'orders.json';
-
-// Ensure the resolved path stays within __DIR__
-if (strpos(realpath($dir) ?: $dir, realpath($dir) ?: $dir) !== 0) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Ralat laluan fail.']);
-    exit;
-}
-
-// ── Load existing orders ──
-$orders = [];
-if (file_exists($file)) {
-    $contents = file_get_contents($file);
-    if ($contents !== false && trim($contents) !== '') {
-        $decoded = json_decode($contents, true);
-        if (is_array($decoded)) {
-            $orders = $decoded;
-        }
-    }
-}
-
-// ── Append and save ──
-$orders[] = $order;
-
-$json = json_encode($orders, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-if ($json === false) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Gagal encode JSON.']);
-    exit;
-}
-
-$written = file_put_contents($file, $json, LOCK_EX);
-if ($written === false) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => 'Gagal simpan pesanan. Sila semak kebenaran folder.']);
-    exit;
-}
-
-// ── Send email notification ──
 $emailSent = sendOrderEmail($order);
 
 // ── Success ──

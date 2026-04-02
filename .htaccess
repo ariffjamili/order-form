@@ -1,0 +1,11 @@
+# Bypass WordPress routing — serve files directly
+Options -Indexes
+
+# Do not pass requests to WordPress
+RewriteEngine Off
+
+# ── Block direct HTTP access to sensitive files ───────────────────────────────
+<FilesMatch "^(\.env.*|db\.php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
